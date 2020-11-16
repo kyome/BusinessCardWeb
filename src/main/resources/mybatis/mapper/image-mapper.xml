@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="image">
+	<insert id="insertImageInfo" parameterType="imageVO" >
+		<selectKey resultType="int" keyProperty="seq"  order="BEFORE">
+			SELECT IFNULL(MAX(seq),0)+1 
+			FROM image
+			WHERE emp_seq = #{empSeq}
+		</selectKey>
+		INSERT INTO image (seq, emp_seq, path, file_name, original_name, file_cd) 
+		VALUES (#{seq}, #{empSeq}, #{path}, #{fileName}, #{originalName}, #{fileCd})
+	</insert>
+	
+	<select id="hasBusinessCardBySeq" parameterType="employeeVO" resultType="int">
+		SELECT IF(COUNT(*)> 0 ,1,0)
+		FROM image
+		WHERE 1 = 1
+		AND file_cd = 'BC'
+		AND emp_seq = #{seq}
+	</select>
+	
+	<select id="getBusinessCardImageBySeq" parameterType="employeeVO" resultType="imageVO">
+	<![CDATA[
+			SELECT *
+			FROM (			
+				SELECT seq, emp_seq "empSeq", path , file_name "fileName", original_name "originalName", reg_date "regDate"
+				FROM image
+				WHERE 1 = 1
+				AND file_cd = 'BC'
+				AND emp_seq = #{seq}
+				ORDER BY regDate DESC ) A 
+			LIMIT 1 
+		]]>
+	</select>
+</mapper>
