@@ -61,7 +61,10 @@ public class ImageServiceImpl implements ImageService {
         
 		// 파일 정보
 		String originFilename = multipartFile.getOriginalFilename();
-		String extName = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
+		String extName = "";
+		if ( originFilename.lastIndexOf(".") > 0 ) {
+			extName = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
+		}
 		Long size = multipartFile.getSize();
 		// 서버에서 저장 할 파일 이름
 		String saveFileName = UUID.randomUUID().toString().replaceAll("-", "")+extName;
@@ -80,6 +83,17 @@ public class ImageServiceImpl implements ImageService {
 		return insertVO;
 		
 	}
+
+	@Override
+	public boolean hasBusinessCardBySeq(EmployeeVO insertVO) {
+		if(imageDao.hasBusinessCardBySeq(insertVO) > 0) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	
 
 //	private void saveFile(MultipartFile multipartFile, String saveFileName) throws IOException {
 //		boolean result = false;

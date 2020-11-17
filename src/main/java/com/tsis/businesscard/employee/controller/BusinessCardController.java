@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -59,10 +60,12 @@ public class BusinessCardController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/employee/businesscard", method = RequestMethod.POST)
-	public String saveBusinesscard( HttpServletRequest req,
+	@RequestMapping(value = "/employee/businessCard/temp", method = RequestMethod.POST)
+	public String saveBusinessCard( HttpServletRequest req,
 			@RequestParam String empSeq,
 			@RequestParam MultipartFile file) {
+		System.out.println("`````````` 이미지 저장");
+		System.out.println(""+empSeq);
 		System.out.println("`````````` 이미지 저장");
 		if( imageService.uploadImage(req, Integer.parseInt(empSeq), "BC", file)) {
 			return "true";
@@ -72,14 +75,53 @@ public class BusinessCardController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/employee/businesscard", method = RequestMethod.GET)
-	public void getBusinesscard(HttpServletResponse response,  @RequestParam int seq) {
+	@RequestMapping(value = "/employee/businessCard", method = RequestMethod.POST)
+	public String saveBusinessCardTest( HttpServletRequest req,
+			HttpServletResponse res,
+			@RequestParam String seq,
+			@RequestParam MultipartFile file ) {
+		if( imageService.uploadImage(req, Integer.parseInt(seq), "BC", file)) {
+			res.setStatus(HttpServletResponse.SC_OK);
+			return "true";
+		}else {
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return "false";
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/employee/hasBusinessCard", method = RequestMethod.GET)
+	public String hasBusinessCard( @RequestParam String seq ) {
+		if (seq == "" ) {
+			return "false";
+		}
+		
+		EmployeeVO vo = new EmployeeVO();
+		vo.setSeq(Integer.parseInt(seq));
+		
+		if( imageService.hasBusinessCardBySeq(vo)) {
+			return "true";
+		}else {
+			return "false";
+		}
+	}
+			
+	
+	@ResponseBody
+	@RequestMapping(value = "/employee/businessCard/{seq}", method = RequestMethod.GET)
+	public void getBusinessCard(HttpServletResponse response, @PathVariable("seq") String seq) {
 		// 사원정보 VO 생성
 		EmployeeVO employeeVO = new EmployeeVO();
-		employeeVO.setSeq(seq);
+		employeeVO.setSeq(Integer.parseInt(seq));
 		
 		// 명함VO 가져오기
+		
 		ImageVO imageVO = imageService.getBusinessCardImageBySeq(employeeVO);
+		if (imageVO == null) {
+			return;
+		} else {
+			System.out.println(imageVO);
+		}
 		
 		// VO정보로 Byte생성
 		InputStream imageStream = null;
@@ -95,14 +137,14 @@ public class BusinessCardController {
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (IOException e) {               
 			e.printStackTrace();
 		}
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/send/businesscard", method = RequestMethod.GET)
-	public String sendBusinesscard(@RequestBody String requestJson) {
+	@RequestMapping(value = "/send/businessCard", method = RequestMethod.GET)
+	public String sendBusinessCard(@RequestBody String requestJson) {
 		Gson gson = new Gson();
 		SendHistoryVO sendInfo = gson.fromJson(requestJson, SendHistoryVO.class);
 		

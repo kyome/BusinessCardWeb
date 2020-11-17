@@ -13,4 +13,6 @@ public interface ImageService {
 
 	public boolean uploadImage( HttpServletRequest req, int empSeq, String fileCd, MultipartFile multipartFile);
 
+	public boolean hasBusinessCardBySeq(EmployeeVO vo);
+
 }

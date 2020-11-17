@@ -21,15 +21,13 @@
 	
 	<select id="getBusinessCardImageBySeq" parameterType="employeeVO" resultType="imageVO">
 	<![CDATA[
-			SELECT *
-			FROM (			
 				SELECT seq, emp_seq "empSeq", path , file_name "fileName", original_name "originalName", reg_date "regDate"
 				FROM image
 				WHERE 1 = 1
 				AND file_cd = 'BC'
 				AND emp_seq = #{seq}
-				ORDER BY regDate DESC ) A 
-			LIMIT 1 
+				ORDER BY reg_date DESC 
+				LIMIT 1
 		]]>
 	</select>
 </mapper>
