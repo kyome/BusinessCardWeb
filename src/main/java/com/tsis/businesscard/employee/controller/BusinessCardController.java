@@ -143,12 +143,12 @@ public class BusinessCardController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/send/businessCard", method = RequestMethod.GET)
+	@RequestMapping(value = "/send/businessCard", method = RequestMethod.POST)
 	public String sendBusinessCard(@RequestBody String requestJson) {
 		Gson gson = new Gson();
 		SendHistoryVO sendInfo = gson.fromJson(requestJson, SendHistoryVO.class);
 		
-		System.out.println(sendInfo.toString());
+		System.out.println(requestJson.toString());
 		if( messageService.sendMessage(sendInfo)) {
 			return "true";
 		}else {

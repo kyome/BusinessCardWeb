@@ -2,6 +2,15 @@
 <!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="message">
 	<insert id="insertSendHistory" parameterType="sendHistoryVO" >
+		<selectKey resultType="int" keyProperty="fileSeq" order="BEFORE">
+				SELECT seq
+				FROM image
+				WHERE 1 = 1
+				AND file_cd = 'BC'
+				AND emp_seq = #{sender}
+				ORDER BY reg_date DESC 
+				LIMIT 1
+		</selectKey>
 		INSERT INTO send_history (sender, receiver, send_type, content, file_seq ) 
 		VALUES (#{sender}, #{receiver}, #{sendType}, #{content}, #{fileSeq})
 	</insert>
