@@ -5,8 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -51,27 +53,36 @@ public class BusinessCardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/employee/info",produces="application/json;charset=UTF-8", method = RequestMethod.GET)
-	public String getEmployeeBySeq(@RequestParam int seq)  {
+	public String getEmployeeBySeq(@RequestParam int seq,
+			HttpSession session)  {
 	
 		EmployeeVO employeeVO = employeeService.getEmployeeBySeq(seq);
 		Gson gson = new Gson();
-		System.out.println(gson.toJson(employeeVO));
 		return gson.toJson(employeeVO);
 	}
 	
+	// 세션 테스트
 	@ResponseBody
-	@RequestMapping(value = "/employee/businessCard/temp", method = RequestMethod.POST)
-	public String saveBusinessCard( HttpServletRequest req,
-			@RequestParam String empSeq,
-			@RequestParam MultipartFile file) {
-		System.out.println("`````````` 이미지 저장");
-		System.out.println(""+empSeq);
-		System.out.println("`````````` 이미지 저장");
-		if( imageService.uploadImage(req, Integer.parseInt(empSeq), "BC", file)) {
-			return "true";
-		}else {
-			return "false";
-		}
+	@RequestMapping(value = "/test/session",produces="application/json;charset=UTF-8", method = RequestMethod.GET)
+	public HttpServletResponse testSession( 
+			HttpServletRequest req,
+			HttpServletResponse res,
+			HttpSession session)  {
+		
+		String data = "server data";
+		
+		session.setAttribute("data", data);
+		System.out.println(req.getSession().getId());
+		System.out.println(session.getId());
+		
+		
+//		for(Cookie c : req.getCookies()) {
+//			
+//			System.out.println(c.toString());
+//		}
+		
+		
+		return res;
 	}
 	
 	@ResponseBody
